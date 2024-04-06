@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Response
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import HTMLResponse, JSONResponse
 from api.v1 import api
+from api.v1.responses import *
 
 app = FastAPI(
     version="0.1dev"
@@ -8,6 +9,12 @@ app = FastAPI(
 
 app.include_router(api.route)
 
+@app.exception_handler(NotFoundApiException)
+async def not_found_handler(r: Request, exc: NotFoundApiException):
+    return JSONResponse(
+        status_code=404,
+        content={"msg": exc.msg}
+    )
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
