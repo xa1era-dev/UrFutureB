@@ -1,0 +1,3 @@
+[submodule "static"]
+	path = static
+	url = https://github.com/xa1era-dev/UrFutureF.git
