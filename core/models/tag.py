@@ -25,3 +25,12 @@ class Tag(Base):
 
     def __str__(self):
         return f"Tag: {self.name}"
+    
+    def __eq__(self, other):
+        if not isinstance(other, Tag):
+            return False
+        return self.id == other.id
+
+    def __hash__(self):
+        return hash(self.id)
+

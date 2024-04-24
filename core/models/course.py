@@ -15,14 +15,14 @@ class Course(Base):
     description = Column(String)
     course_type = Column(String)
     created_by = Column(String)
-    profession_id = Column(Integer, ForeignKey('professions.id'))
-    profession = relationship("Profession", back_populates="courses")
     tags = relationship("Tag", secondary=course_tags, back_populates="courses")
     lessons = relationship("Lesson", back_populates="course")
     teachers = relationship("Teacher", secondary="course_teachers")
+    competences = relationship("Competence", secondary="course_competences", back_populates="courses")
 
     def __repr__(self):
         return f"<Course(id={self.id}, name='{self.name}', description='{self.description}')>"
 
     def __str__(self):
         return f"Course: {self.name}"
+

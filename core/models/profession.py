@@ -8,7 +8,7 @@ class Profession(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     tags = relationship("Tag", back_populates="professions")
-    courses = relationship("Course", back_populates="profession")
+    competences = relationship("Competence", back_populates="profession")
 
     def __repr__(self):
         return f"<Profession(id={self.id}, name='{self.name}')>"
