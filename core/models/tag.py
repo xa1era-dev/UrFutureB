@@ -1,11 +1,7 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import Base
-
-course_tags = Table('course_tags', Base.metadata,
-    Column('course_id', Integer, ForeignKey('courses.id')),
-    Column('tag_id', Integer, ForeignKey('tags.id'))
-)
+from .course import course_tags
 
 profession_tags = Table('profession_tags', Base.metadata,
     Column('profession_id', Integer, ForeignKey('professions.id')),
@@ -32,7 +28,7 @@ class Tag(Base):
         return self.id == other.id
     
     def __ne__(self, other):
-        return not self.__eq__(other)
+        return not self == other
         
     def __hash__(self):
         return hash(self.id)

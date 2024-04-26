@@ -1,4 +1,8 @@
 from pydantic import BaseModel
 
 class NotFoundApiError(BaseModel):
-    msg: str | None = None
+    message: str
+
+class MissingArgumetsError(BaseModel):
+    message: str
+    keys: list[str]
