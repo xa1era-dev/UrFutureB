@@ -28,9 +28,12 @@ class Tag(Base):
     
     def __eq__(self, other):
         if not isinstance(other, Tag):
-            return False
+            raise TypeError("Нельзя сравнивать объекты других классов с объектами класса Tag")
         return self.id == other.id
-
+    
+    def __ne__(self, other):
+        return not self.__eq__(other)
+        
     def __hash__(self):
         return hash(self.id)
 
