@@ -1,22 +1,22 @@
-from fastapi import APIRouter
+from .ApiRouterCusotm import ApiRouterCustom
 from fastapi.responses import JSONResponse
-from core.schemas import Course, LessonsType, NotFoundApiError, MissingArgumetsError
+from core.schemas import Course, LessonType, NotFoundApiError, MissingArgumetsError, UnauthorizedApiError
 from ..responses import *
 
-courserouter = APIRouter(prefix="/course")
+courserouter = ApiRouterCustom(prefix="/course")
 
-@courserouter.get("/all", response_model=list[Course], responses={**api_responses})
+@courserouter.get("/all", response_model=list[Course])
 async def get_all_courses():
-    return [Course(**dict(name="Test", year=2027, course_type="online", description="Test course?", half=2, teachers=None))] # type: ignore
+    return [Course(**dict(name="Test", year=2027, course_type="traditional", description="Test course?", half=2, teachers=None, owner='fdg'))] # type: ignore
 
-@courserouter.get("/me/all", response_model=list[Course])
+@courserouter.check_autorization()
+@courserouter.get("/me/all", response_model=list[Course] | UnauthorizedApiError)
 async def get_my_all_courses():
-    #TODO: create check authorisation
-    return [Course(name="Test", year=2027, lessons_type=LessonsType(course_type="online"), description="Test course?", half=2, teachers=None)]
+    return [Course(name="Test", year=2027, lessons_type=LessonType(type="traditional"), description="Test course?", half=2, teachers=None)]
 
-@courserouter.get("/{course_id}", responses={**api_responses}, response_model=Course | NotFoundApiError)
+@courserouter.get("/{course_id}", response_model=Course | NotFoundApiError | MissingArgumetsError | UnauthorizedApiError)
 async def get_course_by_id(course_id: int):
-    raise NotFoundApiException("dfsd")
+    raise NotImplementedException("get_course_by_id not implemented")
     #Делаем запрос к модели с данным id
     # return course_id
-    return Course(name="Test", year=2024, lessons_type=LessonsType(Type="online"), desc="Test course?")
+    return Course(name="Test", year=2024, lessons_type=LessonType(type="online"), desc="Test course?")

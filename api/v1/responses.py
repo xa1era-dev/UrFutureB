@@ -1,3 +1,7 @@
+import types
+from typing import Callable
+from urllib import response
+from core.schemas import ALL_SCHEMA_CLASSES
 from core.schemas.exceptions import *
 
 api_responses = {
@@ -7,28 +11,28 @@ api_responses = {
             "application/json": {
                 "schema": {
                     "$ref": "#/components/schemas/NotFoundApiError"
-                    }
                 }
             }
-        },
+        }
+    },
     520: {
         "description": "Missing arguments",
         "content": {
             "application/json": {
                 "schema": {
                     "$ref": "#/components/schemas/MissingArgumetsError"
-                    }
                 }
             }
-        },
+        }
+    },
+    401: {
+        "description": "Not authorized",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/UnauthorizedApiError"
+                }
+            }
+        }
+    },
 }
-
-class NotFoundApiException(Exception):
-    def __init__(self, name: str, *args: object):
-        self.msg = name
-        super().__init__(*args)
-
-class UnauthorizedApiException(Exception):
-    def __init__(self, name: str, *args: object):
-        self.name = name
-        super().__init__(*args)
