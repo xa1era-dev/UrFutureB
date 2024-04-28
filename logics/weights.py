@@ -1,11 +1,10 @@
 from typing import List
-from core.models.models import Course, Tag
+from core import Course, Tag
 
 
-# TODO: Заменить Course.lessons на Course.tags после внесения соответствующих правок в модель.
 def get_course_weight(course: Course, tags: List[Tag], order_matters: bool = False) -> float:
     """
-    Вычисляет вес курса как процент пересечения его тегов с указанными.
+    Вычисляет вес курса, как процент покрытия указанных тегов его тегами.
 
     Arguments:
         course -- объект Course, теги которого будут использоваться в вычислениях.
@@ -17,10 +16,10 @@ def get_course_weight(course: Course, tags: List[Tag], order_matters: bool = Fal
     Returns:
         Число типа float в диапазоне [0, 1].
     """
-    return get_intersection_percentage([lesson.id for lesson in course.lessons], [tag.id for tag in tags]) / 100
+    return get_overlapping_percentage(course.tags, tags) / 100
 
 
-def get_intersection_percentage(collection1: List, collection2: List) -> float:
+def get_overlapping_percentage(collection1: List, collection2: List) -> float:
     """
     Вычисляет процент покрытия второй коллекции первой.
 
@@ -31,4 +30,9 @@ def get_intersection_percentage(collection1: List, collection2: List) -> float:
     Returns:
         Число типа float в диапазоне [0, 100].
     """
-    return 100 * len(set(collection1) & set(collection2)) / len(collection2)
+    coll2_len = len(collection2)
+
+    if coll2_len == 0:
+        return 0.0
+
+    return 100 * len(set(collection1) & set(collection2)) / coll2_len
