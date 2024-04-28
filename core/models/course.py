@@ -18,7 +18,6 @@ class Course(Base):
     tags = relationship("Tag", secondary=course_tags, back_populates="courses")
     lessons = relationship("Lesson", back_populates="course")
     teachers = relationship("Teacher", secondary="course_teachers")
-    competences = relationship("Competence", secondary="course_competences", back_populates="courses")
 
     def __repr__(self):
         return f"<Course(id={self.id}, name='{self.name}', description='{self.description}')>"

@@ -1,7 +1,11 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from .base import Base
 
+profession_tags = Table('profession_tags', Base.metadata,
+    Column('profession_id', Integer, ForeignKey('professions.id')),
+    Column('tag_id', Integer, ForeignKey('tags.id'))
+)
 class Profession(Base):
     __tablename__ = 'professions'
 
