@@ -1,23 +1,23 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Table
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
 from .base import Base
 
 course_tags = Table('course_tags', Base.metadata,
-    Column('course_id', Integer, ForeignKey('courses.id')),
-    Column('tag_id', Integer, ForeignKey('tags.id'))
+    Column('course_id', Integer, ForeignKey('course.id')),
+    Column('tag_id', Integer, ForeignKey('tag.id'))
 )
 
 class Course(Base):
-    __tablename__ = 'courses'
+    __tablename__ = 'course'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(String, unique=True)
     description = Column(String)
     course_type = Column(String)
     created_by = Column(String)
-    tags = relationship("Tag", secondary=course_tags, back_populates="courses")
+    tags: Mapped[list["Tag"]] = relationship(secondary=course_tags)
     lessons = relationship("Lesson", back_populates="course")
-    teachers = relationship("Teacher", secondary="course_teachers")
+    # teachers = relationship("Teacher", secondary="course_teachers")
 
     def __repr__(self):
         return f"<Course(id={self.id}, name='{self.name}', description='{self.description}')>"

@@ -3,12 +3,12 @@ from sqlalchemy.orm import relationship
 from .base import Base
 
 class Lesson(Base):
-    __tablename__ = 'lessons'
+    __tablename__ = 'lesson'
 
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)
-    course_id = Column(Integer, ForeignKey('courses.id'))
+    course_id = Column(Integer, ForeignKey('course.id'))
     course = relationship("Course", back_populates="lessons")
 
     def __repr__(self):

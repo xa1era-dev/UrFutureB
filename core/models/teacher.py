@@ -7,7 +7,7 @@ class Teacher(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    courses = relationship("Course", secondary="course_teachers")
+    # courses = relationship("Course", secondary="course_teachers")
 
     def __repr__(self):
         return f"<Teacher(id={self.id}, name='{self.name}')>"

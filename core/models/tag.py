@@ -5,7 +5,7 @@ from .course import course_tags
 
 
 class Tag(Base):
-    __tablename__ = 'tags'
+    __tablename__ = 'tag'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
