@@ -3,5 +3,5 @@
 	url = https://github.com/xa1era-dev/UrFutureF.git
 
 [submodule "envvars"]
-	path = static
+	path = envvars
 	url = https://github.com/xa1era-dev/UrFutureEnv.git
