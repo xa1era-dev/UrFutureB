@@ -12,7 +12,7 @@ async def build_iot():
 
 @schedulerouter.get("/")#TODO: schema for iot
 async def get_iot():
-    raise NotImplementedException("Not Implement")
+    raise NotFoundApiException("Nothing iot saves in your acconut")
 
 @schedulerouter.get("/courses", response_model=NotImplementError | list[Course])
 async def get_iot_courses():

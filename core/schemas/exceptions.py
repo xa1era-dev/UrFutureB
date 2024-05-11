@@ -1,6 +1,6 @@
 class NotFoundApiException(Exception):
     def __init__(self, name: str, *args: object):
-        self.msg = name
+        self.message = name
         super().__init__(*args)
 
 class MissingArgumentException(Exception):

@@ -11,3 +11,32 @@ services:
     volumes:
       - ./.pgdata:/var/lib/postgresql/data
     restart: always
+    
+  urfuture:
+    container_name: urfuture
+    image: "urfuture:latest"
+    build: ./
+    ports:
+      - 8080:8080
+    environment:
+      - LOG=info
+    links:
+      - db
+    depends_on:
+      - db
+
+  nginx:
+    container_name: "nginx"
+    restart: always
+    # hostname: urfuture
+    image: nginx
+    volumes:
+      - ./nginx/certs/:/etc/nginx/ssl
+      - ./nginx/urfuture.conf:/etc/nginx/conf
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - urfuture
+    depends_on:
+      - urfuture
