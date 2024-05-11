@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy import create_engine, select
-from sqlalchemy.orm import sessionmaker
-from models import Profession, Tag, Course, course_tags, Competence, competence_tags, create_session
+from models.database import DB_URL
+from models import Profession, Tag, Course, course_tags, Competence, competence_tags, create_session, Session
 
 
 
@@ -112,7 +112,6 @@ courses_tags = {
 }
 
 
-
 competences_tags = {
     "Умение работать с нейронными сетями": [
         "Нейронные сети", "OpenCV", "TensorFlow", "Keras", "Caffe", "PyTorch", 
@@ -158,20 +157,21 @@ competences_tags = {
         "GitHub", "GitLab", "Bitbucket", "Netify", "Google"
     ],
 }
+
 logging.basicConfig(level=logging.DEBUG)
 
-session = create_session("postgresql://postgres:postgres@localhost/postgres")
+session = create_session(DB_URL)
 
-def insert_data(data, Model, session):
+def insert_data(data, Model, session: Session):
     try:
         for name, tags in data.items():
             obj = Model(name=name)
-            session.add(obj)
+            session.insert(obj)
             for tag_name in tags:
                 tag = session.query(Tag).filter_by(name=tag_name).first()
                 if not tag:
                     tag = Tag(name=tag_name)
-                    session.add(tag)
+                    session.insert(tag)
                 obj.tags.append(tag)
         session.commit()
         print(f"Данные успешно добавлены в таблицу {Model.__tablename__}")

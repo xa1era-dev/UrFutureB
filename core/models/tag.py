@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import Base
-from .course import course_tags
+
 
 
 class Tag(Base):
