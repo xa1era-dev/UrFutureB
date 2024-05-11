@@ -3,8 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-.gitmodules
-
 # C extensions
 *.so
 
@@ -139,6 +137,10 @@ venv.bak/
 
 # mkdocs documentation
 /site
+
+#pg data
+.pgdata/
+pgdata/
 
 # mypy
 .mypy_cache/
