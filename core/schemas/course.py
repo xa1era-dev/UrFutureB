@@ -10,12 +10,12 @@ class Course(BaseModel):
     model_config = ConfigDict(extra='ignore', from_attributes=True, populate_by_name=True)
 
     name: str
-    year: int = Field(ge=2024)
+    year: int | None = Field(ge=2024, default=None)
     half: Literal[1, 2] = 1
     lessons_type: LessonType | None = None
-    img_src: str = "no_foto.img" #TODO: find src validation
-    description: str 
-    teachers: list[int] | None
+    img_src: str | None = "no_foto.img" #TODO: find src validation
+    description: str | None
+    teachers: list[int] = []
 
     @validator("img_src", pre=True)
     def validate_src(cls, value: Any) -> AnyUrl:
@@ -31,17 +31,17 @@ class Course(BaseModel):
 
         return value
 
-    @root_validator(pre=True)
-    def build_lessons_type(cls, values: dict[str, Any]) -> dict[str, Any]:
-        if isinstance(values.get("lessons_type", {}), dict):
-            lessons_type = {}
-            values["platform"] = values.get("platform", "ОК")
-            missing_keys = filter(lambda lt: lt not in values.keys(), LessonType.model_fields)#TODO: Сделать поиск по alies
-            if any(missing_keys):
-                raise MissingArgumentException(f"Not all items required items in LessonType", list(missing_keys))
-            for field_name in list(LessonType.model_fields.keys()):
-                lessons_type[field_name] = values.get(field_name)
-            values['lessons_type'] = LessonType(**lessons_type)
-            if values.get("teachers", None) is not None:
-                values["teachers"] = (lambda t: t.get("id"), values.get("teachers", {None}))
-        return values
+    # @root_validator(pre=True)
+    # def build_lessons_type(cls, values: dict[str, Any]) -> dict[str, Any]:
+    #     if isinstance(values.get("lessons_type", {}), dict):
+    #         lessons_type = {}
+    #         values["platform"] = values.get("platform", "ОК")
+    #         missing_keys = filter(lambda lt: lt not in values.keys(), LessonType.model_fields)#TODO: Сделать поиск по alies
+    #         if any(missing_keys):
+    #             raise MissingArgumentException(f"Not all items required items in LessonType", list(missing_keys))
+    #         for field_name in list(LessonType.model_fields.keys()):
+    #             lessons_type[field_name] = values.get(field_name)
+    #         values['lessons_type'] = LessonType(**lessons_type)
+    #         if values.get("teachers", None) is not None:
+    #             values["teachers"] = (lambda t: t.get("id"), values.get("teachers", {None}))
+    #     return values

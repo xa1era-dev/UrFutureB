@@ -1,19 +1,27 @@
-from fastapi import APIRouter
-from core.schemas import  NotFoundApiError
+from core.models.database import DB_URL, create_session
+from .ApiRouterCusotm import ApiRouterCustom
+from core.schemas import Profession, NotFoundApiError, NotImplementError
+from core.models import Profession as ProfessionM
 from ..responses import *
 
-professionrouter = APIRouter(prefix="/schedule/build")
+professionrouter = ApiRouterCustom(prefix="/schedule/build")
 
-@professionrouter.post("/")
+# @professionrouter.post("/")
 
-# @professionrouter.get("/all")
-# async def get_all_professions(response_model=list[Profession]):
-#     raise NotFoundApiException("Not Implement")
+@professionrouter.get("/all", response_model=list[Profession])
+async def get_all_professions():
+    with create_session(DB_URL) as sess:
+        return list(map(lambda c: Profession(**c.__dict__), sess.query(ProfessionM).all()))
 
-@professionrouter.get("/{pr_id}/courses", responses={**api_responses}, response_model=NotFoundApiError)
+@professionrouter.check_autorization()
+@professionrouter.get("/{pr_id}/courses", response_model=NotFoundApiError | NotImplementError)
 async def get_courses_by_profprofession(pr_id: int):
-    raise NotFoundApiException("Not Implement")
+    raise NotImplementedException("Not Implement")
 
-# @professionrouter.get("/{pr_id}", responses={**api_responses}, response_model=Profession | NotFoundApiError)
-# async def get_professions_by_id(pr_id: int):
-#     raise NotFoundApiException("dfsd")
+@professionrouter.get("/{pr_id}", response_model=Profession | NotFoundApiError)
+async def get_professions_by_id(pr_id: int):
+    with create_session(DB_URL) as sess:
+        raw_course = sess.query(ProfessionM).where(ProfessionM.id == pr_id).first()
+        if (raw_course is None):
+            raise NotFoundApiException(f"Profession with {pr_id} id doens't exists")
+        return Profession(**raw_course.__dict__)

@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy import create_engine, select
-from models.database import DB_URL
-from models import Profession, Tag, Course, course_tags, Competence, competence_tags, create_session, Session
+from models.base import Base
+from models import Profession, Tag, Course, course_tags, Competence, competence_tags, create_session, Session, database
 
 
 
@@ -160,33 +160,35 @@ competences_tags = {
 
 logging.basicConfig(level=logging.DEBUG)
 
-session = create_session(DB_URL)
-
-def insert_data(data, Model, session: Session):
-    try:
+def insert_data(data: dict[str, list[str]], Model: Profession | Course | Competence):
+    with create_session(database.DB_URL) as sess:
+        sess.insert(map(lambda n: Model(name=n), data.keys()))
         for name, tags in data.items():
-            obj = Model(name=name)
-            session.insert(obj)
-            for tag_name in tags:
-                tag = session.query(Tag).filter_by(name=tag_name).first()
-                if not tag:
+            try:
+                obj = Model(name=name)
+                tags_ = []
+                all_tags = []
+                alive_tags = sess.query(Tag).where(Tag.name.in_(tags)).all()
+                for tag_name in tags:
                     tag = Tag(name=tag_name)
-                    session.insert(tag)
-                obj.tags.append(tag)
-        session.commit()
-        print(f"Данные успешно добавлены в таблицу {Model.__tablename__}")
-    except Exception as e:
-        session.rollback()
-        print(f"Ошибка при добавлении данных в таблицу {Model.__tablename__}: {e}")
-        raise e
-    finally:
-        session.close()
+                    if tag not in alive_tags:
+                        tags_.append(tag)
+                    all_tags.append(tag)
+                sess.insert(tags_)
+                obj.tags.extend(all_tags)
+                sess.commit()
+                print(f"Данные успешно добавлены в таблицу {Model.__tablename__}")
+            except Exception as e:
+                print(f"Ошибка при добавлении данных в таблицу {Model.__tablename__}: {e}")
 
 if __name__ == "__main__":
     try:
-        insert_data(professions_tags, Profession, session)
-        insert_data(courses_tags, Course, session)
-        insert_data(competences_tags, Competence, session)
+        engine = create_engine(database.DB_URL)
+        Base.metadata.drop_all(engine) # Сброс бд.
+        Base.metadata.create_all(engine)
+        insert_data(professions_tags, Profession)
+        insert_data(courses_tags, Course)
+        insert_data(competences_tags, Competence)
     except Exception as e:
         print(f"Произошла ошибка: {e}")
 

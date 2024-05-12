@@ -1,6 +1,5 @@
-
 from pydantic import BaseModel
 
 
-class Proffesion(BaseModel):
+class Profession(BaseModel):
     name: str

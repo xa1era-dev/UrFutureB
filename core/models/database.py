@@ -1,7 +1,7 @@
-import pathlib
+from contextlib import contextmanager
 import re
 from typing import overload
-from sqlalchemy import create_engine
+from sqlalchemy import MetaData, create_engine
 from .base import Base
 from .profession import Profession
 from .course import Course
@@ -23,14 +23,21 @@ def env(name: str, default: str | None = None) -> str | None:
 
 DB_URL = re.sub("(\n|\s)+", "",  # type: ignore
                 f"""postgresql://{env("POSTGRES_USER", "postgres")}:
-                    {env("POSTGRES_PSW", "postgres")}@
+                    {env("POSTGRES_PASSWORD", "postgres")}@
                     {env("POSTGRES_SERVER", "localhost")}:
                     {env("POSTGRES_PORT", "5433")}/
                     {env("POSTGRES_DB", 'postgres')}""")
 
-def create_session(DB_URL: str) -> Session:
+@contextmanager
+def create_session(DB_URL: str):
     engine = create_engine(DB_URL)
-    Base.metadata.create_all(engine)
-    session = sessionmaker(class_=Session, bind=engine, )
-    return session()
+    session = sessionmaker(class_=Session, bind=engine, expire_on_commit=False)()
+    try:
+        yield session
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
 

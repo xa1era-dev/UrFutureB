@@ -7,11 +7,14 @@ class LessonType(BaseModel):
     type: Annotated[str, Literal["online", "traditional", "mixed"], Field(validation_alias=AliasChoices("type", "course_type"))]
     owner: str = Field(default="УрФУ", validation_alias=AliasChoices("owner", "created_by"))
     platform: str | None = Field(default=None) #"ОК", "elearn", "ulear"... Только если online
+    kabinet: str | None = Field(default=None) #Р-123 Для traditional
 
     @validator("type")
     def validate_platform(cls, v: Annotated[str, Literal["online", "traditional", "mixed"]]):
         if v != "online":
             cls.platform = None
+        if v != "traditional":
+            cls.kabinet = None
         return v
 
 
@@ -24,5 +27,5 @@ class LessonTime(BaseModel):
 
 
 class Lesson(BaseModel):
-    l_class: LessonTime
-    type: LessonType
+    class_: LessonTime
+    type_: LessonType

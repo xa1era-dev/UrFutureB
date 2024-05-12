@@ -5,6 +5,7 @@ from .course import *
 from .responses import * 
 from .exceptions import *
 from .lesson import *
+from .profession import *
 from .teacher import *
 
 def filter_schema_classes(obj):
