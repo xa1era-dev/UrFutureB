@@ -1,5 +1,5 @@
-from typing import List
-from core import Course, Tag
+from typing import List, Tuple, Set
+from core import Course, Tag, Competence, Profession
 
 
 def get_course_weight(course: Course, tags: List[Tag], order_matters: bool = False) -> float:
