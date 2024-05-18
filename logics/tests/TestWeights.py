@@ -1,7 +1,6 @@
 import unittest
 
-
-from logics.tests.models import *
+from core import Course, Tag
 from logics.weights import get_course_weight
 
 
