@@ -1,7 +1,7 @@
+from itertools import chain
 from typing import List, Tuple, Set
-
 from core import Course, Tag, Profession, Competence
-from logics import get_course_weight, get_overlapping_percentage
+from .weights import get_course_weight, get_overlapping_percentage
 
 
 # Ожидается, что в метод поступят компетенции, теги которых уже совпадают с тегами выбранной професии.
@@ -28,7 +28,7 @@ def get_sorted_competences_and_all_tags(
         Кортеж из двух значений: (list(сортированные компетенции); set(объединение всех тегов компетенций)).
     """
     competences.sort(key=lambda comp: get_overlapping_percentage(comp.tags, profession.tags), reverse=descending)
-    all_tags = {item for competence in competences for item in competence.tags}
+    all_tags = set(chain.from_iterable(comp.tags for comp in competences))
 
     return competences, all_tags
 
