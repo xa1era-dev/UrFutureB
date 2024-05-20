@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import relationship, Mapped
 from .base import Base
+from .tag import Tag
 
 competence_tags = Table('competence_tags', Base.metadata,
     Column('competence_id', Integer, ForeignKey('competence.id')),
@@ -13,7 +14,7 @@ class Competence(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique= True)
     description = Column(String)
-    tags: Mapped[list["Tag"]] = relationship(secondary=competence_tags)
+    tags: Mapped[list[Tag]] = relationship(secondary=competence_tags)
     
     def __repr__(self):
         return f"<Competence(id={self.id}, name='{self.name}', description='{self.description}')>"

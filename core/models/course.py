@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Enum, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import relationship, Mapped
 from .base import Base
+from .tag import Tag
+from ..enums import Course_type
 if __name__ == "models.course":
     from enums import Course_type
 else:
@@ -24,7 +26,7 @@ class Course(Base):
     course_type = Column(Enum(Course_type), server_default=Course_type.traditional.value)
     year = Column(Integer)
     created_by = Column(String)
-    tags: Mapped[list["Tag"]] = relationship(secondary=course_tags)
+    tags: Mapped[list[Tag]] = relationship(secondary=course_tags)
     lessons = relationship("Lesson", back_populates="course")
     # teachers = relationship("Teacher", secondary="course_teachers")
 
