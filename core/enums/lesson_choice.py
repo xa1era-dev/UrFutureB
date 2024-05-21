@@ -1,7 +1,7 @@
 import enum 
 
 class LessonChoiceState(enum.Enum):
-    NEUTRAL = 0
-    ACCEPT = 1
-    NOT_ACCEPT = 2
-    IGNORE = 3
+    NEUTRAL = "NEUTRAL"
+    ACCEPT = "ACCEPT"
+    NOT_ACCEPT = "NOT_ACCEPT"
+    IGNORE = "IGNORE"

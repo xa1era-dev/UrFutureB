@@ -3,10 +3,7 @@ from sqlalchemy.orm import relationship, Mapped
 from .base import Base
 from .tag import Tag
 from ..enums import Course_type
-if __name__ == "models.course":
-    from enums import Course_type
-else:
-    from ..enums import Course_type
+from ..enums import Course_type
 
 
 

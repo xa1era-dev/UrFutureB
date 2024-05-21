@@ -1,5 +1,6 @@
 from typing import Annotated, Literal
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, validator
+from .lesson_time import LessonTime
 
 class LessonType(BaseModel):
     model_config = ConfigDict(extra='ignore', from_attributes=True, populate_by_name=True)
@@ -16,14 +17,6 @@ class LessonType(BaseModel):
         if v != "traditional":
             cls.kabinet = None
         return v
-
-
-class LessonTime(BaseModel):
-    model_config = ConfigDict(extra='ignore', from_attributes=True, populate_by_name=True)
-    
-    week: Annotated[int, Field(ge=-1, le=10, default=-1)]
-    day: Annotated[int, Field(ge=0, le=7)]
-    time: Annotated[int, Field(ge=0, le=9), ] = Field(validation_alias="time")
 
 
 class Lesson(BaseModel):
