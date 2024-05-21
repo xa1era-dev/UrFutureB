@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# JetBrains IDE configuration:
+.idea/
+.gitmodules
+
 # C extensions
 *.so
 
