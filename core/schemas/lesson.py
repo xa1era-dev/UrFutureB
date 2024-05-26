@@ -1,11 +1,11 @@
 from typing import Annotated, Literal
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field, validator
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_serializer, validator
 from .lesson_time import LessonTime
+from ..enums import LessonType as EnumLessonType
 
 class LessonType(BaseModel):
     model_config = ConfigDict(extra='ignore', from_attributes=True, populate_by_name=True)
-
-    type: Annotated[str, Literal["online", "traditional", "mixed"], Field(validation_alias=AliasChoices("type", "course_type"))]
+    type: EnumLessonType
     owner: str = Field(default="УрФУ", validation_alias=AliasChoices("owner", "created_by"))
     platform: str | None = Field(default=None) #"ОК", "elearn", "ulear"... Только если online
     kabinet: str | None = Field(default=None) #Р-123 Для traditional
@@ -19,6 +19,5 @@ class LessonType(BaseModel):
         return v
 
 
-class Lesson(BaseModel):
-    class_: LessonTime
-    type_: LessonType
+class Lesson(LessonTime, LessonType):
+    ...

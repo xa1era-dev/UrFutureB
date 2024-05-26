@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from core.schemas import Course, LessonTimeChoice, Teacher, NotImplementError, HalfPeroid
 from core.models.database import create_session, DB_URL
 from core.models.choices import user_choices 
+from core.schemas.iot import IOT
 from ..responses import *
 
 schedulerouter = APIRouter(prefix="/schedule/build")
@@ -10,6 +11,11 @@ schedulerouter = APIRouter(prefix="/schedule/build")
 @schedulerouter.post("/")
 async def build_iot():
     raise NotImplementedException("Not Implement")
+
+@schedulerouter.get("/", response_model=IOT | NotImplementError)
+async def get_builded_iot():
+    raise NotImplementedException("Not Implement")
+
 
 @schedulerouter.get("/courses", response_model=list[Course] | NotImplementError)
 async def get_iot_courses(descipline_id: int, year: int | None, half: Literal[1, 2] | None):

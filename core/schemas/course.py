@@ -1,10 +1,10 @@
 from __future__ import annotations
 from pathlib import Path
 from urllib.parse import urlparse
-from pydantic import AliasChoices, AnyUrl, BaseModel, ConfigDict, Field, root_validator, validator
+from pydantic import AliasChoices, AnyUrl, BaseModel, ConfigDict, Field, root_validator, validator, HttpUrl, UrlConstraints
 from typing import Annotated, Any, Literal
 from .exceptions import *
-from .lesson import LessonType
+from .lesson import Lesson, LessonType
 from .half_period import HalfPeroid
 
 class Course(BaseModel):
@@ -14,9 +14,10 @@ class Course(BaseModel):
     name: str
     half: HalfPeroid
     lessons_type: LessonType | None = None
-    img_src: str | None = "no_foto.img" #TODO: find src validation
+    img_src: HttpUrl
     description: str | None
     teachers: list[int] = []
+    lessons: list[Lesson]
 
     @validator("img_src", pre=True)
     def validate_src(cls, value: Any) -> AnyUrl:
