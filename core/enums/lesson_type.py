@@ -1,6 +1,6 @@
 import enum
 
-class LessonType(enum.Enum):
+class LessonType(str, enum.Enum):
     OK = "Онлайн курс"
     PRACTICE = "Практика"
     LECTURE = "Лекция"

@@ -13,7 +13,6 @@ class Course(BaseModel):
     id: int = 0
     name: str
     half: HalfPeroid
-    lessons_type: LessonType | None = None
     img_src: HttpUrl
     description: str | None
     teachers: list[int] = []

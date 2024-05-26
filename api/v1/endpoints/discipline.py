@@ -1,7 +1,6 @@
 from core.models.database import DB_URL, create_session
 from .ApiRouterCusotm import ApiRouterCustom
-from core.schemas import Discipline, LessonType, NotFoundApiError, NotImplementError, UnauthorizedApiError
-from core.models import Course as CourseM
+from core.schemas import Discipline, NotFoundApiError, NotImplementError, UnauthorizedApiError
 from ..responses import *
 
 disciplinerouter = ApiRouterCustom(prefix="/discipline")

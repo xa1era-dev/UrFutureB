@@ -4,7 +4,7 @@ from core.schemas import Profession, NotFoundApiError, NotImplementError
 from core.models import Profession as ProfessionM
 from ..responses import *
 
-professionrouter = ApiRouterCustom(prefix="/schedule/build")
+professionrouter = ApiRouterCustom(prefix="/professions")
 
 # @professionrouter.post("/")
 
@@ -14,7 +14,7 @@ async def get_all_professions():
         return list(map(lambda c: Profession(**c.__dict__), sess.query(ProfessionM).all()))
 
 @professionrouter.check_autorization()
-@professionrouter.get("/{pr_id}/courses", response_model=NotFoundApiError | NotImplementError)
+@professionrouter.get("/me/all", response_model=list[Profession] | NotFoundApiError | NotImplementError)
 async def get_courses_by_profprofession(pr_id: int):
     raise NotImplementedException("Not Implement")
 
