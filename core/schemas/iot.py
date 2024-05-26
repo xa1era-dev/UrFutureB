@@ -11,3 +11,7 @@ class IOT(BaseModel):
     half_period: HalfPeroid
     courses_ids: list[int]
     lessons: list[Lesson]
+    
+class IOTTime(BaseModel):
+    days: list[int] = []
+    half: Literal[1, 2] = 1

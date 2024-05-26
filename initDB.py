@@ -177,7 +177,7 @@ course_teachers = {
 
 logging.basicConfig(level=logging.DEBUG)
 
-def insert_data(data: dict[str, list[str]], Model: Profession | Course | Competence):
+def insert_data(data: dict[str, list[str]], Model: Profession | Teacher | Competence):
     with create_session(database.DB_URL) as sess:
         sess.insert(map(lambda n: Model(name=n), data.keys()))
         for name, tags in data.items():

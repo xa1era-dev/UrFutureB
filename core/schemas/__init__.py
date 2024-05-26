@@ -1,16 +1,17 @@
 import inspect
 import sys
 import types
-from .course import *
-from .responses import * 
+from pydantic import BaseModel
+from .course import Course
+from .responses import NotFoundApiError, MissingArgumetsError, UnauthorizedApiError, NotImplementError
 from .exceptions import *
-from .lesson import *
-from .profession import *
-from .teacher import *
-from .choices import * 
-from .lesson_time import LessonTime
-from .iot import IOT
+from .lesson import Lesson, LessonType, LessonTime
+from .profession import Profession, WorkData
+from .teacher import Teacher
+from .choices import LessonTimeChoice
+from .iot import IOT, IOTTime
 from .discipline import Discipline
+from .half_period import HalfPeroid
 
 def filter_schema_classes(obj):
     return inspect.isclass(obj) and issubclass(obj, BaseModel) and __name__ in obj.__module__
