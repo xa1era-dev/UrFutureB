@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy import create_engine, select
 from core.models.base import Base
-from core.models import Profession, Tag, Course, course_tags, Competence, competence_tags, create_session, Session, database
+from core.models import Profession, Tag, Course, course_tags, Competence, competence_tags, create_session, Session, database, discipline_courses, Discipline, Teacher, course_teachers
 
 
 
@@ -157,6 +157,23 @@ competences_tags = {
         "GitHub", "GitLab", "Bitbucket", "Netify", "Google"
     ],
 }
+discipline_courses = { 
+    "Программирование": [
+        "Анализ естественного языка (Онлайн, SkillFactory)", "UX/UI дизайн"
+    ],
+    "Анализ данных и искусственный интеллект": [
+        "Нейронные сети и компьютерное зрение", "Тестирование программного обеспечения"
+    ],   
+}
+course_teachers = {
+    "Васильев Ростислав Вадимович": [
+        "Тестирование программного обеспечения", "UX/UI дизайн"
+    ],
+    "Чернышев Лев Максимович": [
+        "Нейронные сети и компьютерное зрение", "Базы данных. Углубленный курс"
+    ],
+  
+}
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -181,14 +198,53 @@ def insert_data(data: dict[str, list[str]], Model: Profession | Course | Compete
             except Exception as e:
                 print(f"Ошибка при добавлении данных в таблицу {Model.__tablename__}: {e}")
 
+def insert_disciplines_and_courses(discipline_courses_data: dict):
+    with create_session(database.DB_URL) as sess:
+        try:
+            for discipline_name, course_names in discipline_courses_data.items():
+                discipline = Discipline(name=discipline_name)
+                for course_name in course_names:
+                    course = sess.query(Course).filter_by(name=course_name).first()
+                    if course:
+                        discipline.courses.append(course)
+                    else:
+                        print(f"Course '{course_name}' not found")
+                sess.add(discipline)
+                sess.commit()
+                print(f"Discipline '{discipline_name}' successfully added")
+        except Exception as e:
+            print(f"Error inserting discipline '{discipline_name}': {e}")
+
+
+
+def insert_courses_and_teachers(course_teachers_data: dict):
+    with create_session(database.DB_URL) as sess:
+        try:
+            for teacher_name, course_names in course_teachers_data.items():
+                teacher = Teacher(name=teacher_name)
+                for course_name in course_names:
+                    course = sess.query(Course).filter_by(name=course_name).first()
+                    if course:
+                        teacher.courses.append(course)
+                    else:
+                        print(f"Course '{course_name}' not found")
+                sess.add(teacher)
+                sess.commit()
+                print(f"Teacher '{teacher_name}' successfully added")
+        except Exception as e:
+            print(f"Error inserting teacher '{teacher_name}': {e}")
+
+
 if __name__ == "__main__":
     try:
         engine = create_engine(database.DB_URL)
-        Base.metadata.drop_all(engine) # Сброс бд.
+        Base.metadata.drop_all(engine) 
         Base.metadata.create_all(engine)
-        # insert_data(professions_tags, Profession)
-        # insert_data(courses_tags, Course)
-        # insert_data(competences_tags, Competence)
+        insert_data(professions_tags, Profession)
+        insert_data(courses_tags, Course)
+        insert_data(competences_tags, Competence)
+        insert_disciplines_and_courses(discipline_courses)
+        insert_courses_and_teachers(course_teachers)
     except Exception as e:
         print(f"Произошла ошибка: {e}")
 

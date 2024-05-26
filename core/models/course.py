@@ -4,7 +4,8 @@ from .base import Base
 from .tag import Tag
 from ..enums import Course_type
 from ..enums import Course_type
-
+from .teacher import Teacher
+from .secondaries import course_teachers
 
 
 course_tags = Table('course_tags', Base.metadata,
@@ -25,7 +26,7 @@ class Course(Base):
     created_by = Column(String)
     tags: Mapped[list[Tag]] = relationship(secondary=course_tags)
     lessons = relationship("Lesson", back_populates="course")
-    # teachers = relationship("Teacher", secondary="course_teachers")
+    teachers: Mapped[list[Teacher]] = relationship(secondary=course_teachers)
 
     def __repr__(self):
         return f"<Course(id={self.id}, name='{self.name}', description='{self.description}')>"

@@ -7,14 +7,15 @@ from .lessons_time_choice import LessonTimeChoice
 from .teacher_choice import TeacherChoice
 import uuid
 
+
 lessons_choices = Table('lessons_choices', Base.metadata,
-    Column('user_uuid', UUID, ForeignKey(User.uuid)),
-    Column('lesson_uuid', UUID, ForeignKey(LessonTimeChoice.uuid))
+    Column('user_choice_uuid', UUID(as_uuid=True), ForeignKey("user_choices.uuid")),
+    Column('lesson_uuid', UUID(as_uuid=True), ForeignKey(LessonTimeChoice.uuid))
 )
 
 teachers_choices = Table("teachers_choices", Base.metadata,
-    Column('user_uuid', UUID, ForeignKey(User.uuid)),
-    Column("teacher_uuid", UUID, ForeignKey(TeacherChoice.uuid))
+    Column('user_choice_uuid', UUID(as_uuid=True), ForeignKey("user_choices.uuid")),
+    Column("teacher_uuid", UUID(as_uuid=True), ForeignKey(TeacherChoice.uuid))
 )
 
 class Choices(Base):
@@ -23,6 +24,6 @@ class Choices(Base):
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_uuid = Column(UUID, ForeignKey(User.uuid))
     half_uuid = Column(UUID, ForeignKey(HalfPeroid.uuid))
-    lesson_times_uuids: Mapped[list[LessonTimeChoice]] = relationship(secondary=lessons_choices)
-    teachers_uuids: Mapped[list[TeacherChoice]] = relationship(secondary=teachers_choices)
+    lesson_times_uuids: Mapped[list[LessonTimeChoice]] = relationship(secondary=lessons_choices, uselist=True)
+    teachers_uuids: Mapped[list[TeacherChoice]] = relationship(secondary=teachers_choices, uselist=True)
     
