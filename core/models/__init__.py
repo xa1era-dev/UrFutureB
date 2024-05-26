@@ -9,3 +9,4 @@ from .database import create_session, DB_URL
 from ._session import *
 from .user import User
 from .choices import *
+from .discipline import *

@@ -8,6 +8,7 @@ from .teacher_choice import TeacherChoice
 import uuid
 
 
+
 lessons_choices = Table('user_lessons_choices', Base.metadata,
     Column('user_choice_uuid', UUID(as_uuid=True), ForeignKey("user_choices.uuid")),
     Column('lesson_uuid', UUID(as_uuid=True), ForeignKey(LessonTimeChoice.uuid))
