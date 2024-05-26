@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy import create_engine, select
-from models.base import Base
-from models import Profession, Tag, Course, course_tags, Competence, competence_tags, create_session, Session, database
+from core.models.base import Base
+from core.models import Profession, Tag, Course, course_tags, Competence, competence_tags, create_session, Session, database
 
 
 
@@ -186,9 +186,9 @@ if __name__ == "__main__":
         engine = create_engine(database.DB_URL)
         Base.metadata.drop_all(engine) # Сброс бд.
         Base.metadata.create_all(engine)
-        insert_data(professions_tags, Profession)
-        insert_data(courses_tags, Course)
-        insert_data(competences_tags, Competence)
+        # insert_data(professions_tags, Profession)
+        # insert_data(courses_tags, Course)
+        # insert_data(competences_tags, Competence)
     except Exception as e:
         print(f"Произошла ошибка: {e}")
 

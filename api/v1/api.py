@@ -15,6 +15,6 @@ async def is_alive():
     """
     return "1" #TODO: Сделать проверку работоспособности апи
 
-@apiv1router.head("/refresh_schemas") 
+@apiv1router.head("/") 
 async def load_chemas(shemas: ALL_SCHEMA_CLASSES): # type: ignore
     return "all schemas refreshed"

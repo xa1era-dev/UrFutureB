@@ -7,6 +7,10 @@ from .exceptions import *
 from .lesson import *
 from .profession import *
 from .teacher import *
+from .choices import * 
+from .lesson_time import LessonTime
+from .iot import IOT
+from .discipline import Discipline
 
 def filter_schema_classes(obj):
     return inspect.isclass(obj) and issubclass(obj, BaseModel) and __name__ in obj.__module__
