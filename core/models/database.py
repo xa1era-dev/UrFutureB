@@ -25,7 +25,7 @@ DB_URL = re.sub("(\n|\s)+", "",  # type: ignore
                 f"""postgresql://{env("POSTGRES_USER", "postgres")}:
                     {env("POSTGRES_PASSWORD", "postgres")}@
                     {env("POSTGRES_SERVER", "localhost")}:
-                    {env("POSTGRES_PORT", "5432")}/
+                    {env("POSTGRES_PORT", "5433")}/
                     {env("POSTGRES_DB", 'postgres')}""")
 
 @contextmanager

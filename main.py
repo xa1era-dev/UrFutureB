@@ -1,7 +1,7 @@
 import json
 from fastapi import FastAPI, Request, Response, Depends
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi_csrf_protect.exceptions import CsrfProtectError
@@ -11,6 +11,8 @@ from login import loginrouter
 from core.schemas import TUPLES_ERR_EXC
 from core.schemas.responses import *
 
+import os
+
 app = FastAPI(
     version="0.3.0dev"
 )
@@ -18,8 +20,8 @@ app = FastAPI(
 app.include_router(api.apiv1router)
 app.include_router(loginrouter)
 
-app.mount("/static", StaticFiles(directory="static/public", html=True), name="static")
-templates = Jinja2Templates(directory="static/public")
+app.mount("/", StaticFiles(directory="static/dist", html=True))
+templates = Jinja2Templates(directory="static/dist")
 
 @app.exception_handler(NotFoundApiException)
 async def not_found_handler(r: Request, exc: NotFoundApiException):
@@ -53,7 +55,14 @@ async def endpoint_is_not_implemented(r: Request, exc: NotImplementedException):
 def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
 
+@app.exception_handler(404)
+async def custom_404_handler(r: Request, __):
+    if "src/" in r.url.path:
+        path = os.path.join("./", r.url.path + ".js")
+        # print(path)
+        return RedirectResponse(path)
+    return JSONResponse({"data": "not found"}, status_code=404)
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/1", response_class=HTMLResponse)
 def read_root(request: Request):
     return templates.TemplateResponse(name="index.html", request=request)

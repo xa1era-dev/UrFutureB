@@ -1,22 +1,25 @@
 from __future__ import annotations
 from pathlib import Path
 from urllib.parse import urlparse
-from pydantic import AliasChoices, AnyUrl, BaseModel, ConfigDict, Field, root_validator, validator, HttpUrl, UrlConstraints
+from pydantic import AliasChoices, AnyUrl, BaseModel, ConfigDict, Field, root_validator, validator, HttpUrl, UrlConstraints, Extra
 from typing import Annotated, Any, Literal
+from core.schemas.teacher import BaseTeacher
 from .exceptions import *
-from .lesson import Lesson, LessonType
+from .lesson import Lesson
 from .half_period import HalfPeroid
+from .group import Group
 
-class Course(BaseModel):
+class Course(BaseModel, extra="ignore"):
     model_config = ConfigDict(extra='ignore', from_attributes=True, populate_by_name=True)
 
     id: int = 0
     name: str
-    half: HalfPeroid
-    img_src: HttpUrl
-    description: str | None
-    teachers: list[int] = []
-    lessons: list[Lesson]
+    half: HalfPeroid = HalfPeroid(year=2024, half=1) 
+    img_src: HttpUrl | None = None
+    description: str = ""
+    groups: list[Group] = []
+    teachers: list[BaseTeacher] = []
+    lessons: list[Lesson] = []
 
     @validator("img_src", pre=True)
     def validate_src(cls, value: Any) -> AnyUrl:
@@ -33,7 +36,9 @@ class Course(BaseModel):
         return value
 
     # @root_validator(pre=True)
-    # def build_lessons_type(cls, values: dict[str, Any]) -> dict[str, Any]:
+    # def build_lessons_type(cls, values: dict[str, Any]):
+    #     print(values)
+    #     return values
     #     if isinstance(values.get("lessons_type", {}), dict):
     #         lessons_type = {}
     #         values["platform"] = values.get("platform", "ОК")

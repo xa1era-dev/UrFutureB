@@ -1,6 +1,6 @@
 from itertools import chain
 from typing import List, Tuple, Set
-from core import Course, Tag, Profession, Competence
+from core.models import Course, Tag, Profession, Competence
 from .weights import get_course_weight, get_overlapping_percentage
 
 

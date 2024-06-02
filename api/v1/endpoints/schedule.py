@@ -1,6 +1,6 @@
 from typing import Annotated, Literal
 from fastapi import APIRouter
-from core.schemas import Course, LessonTimeChoice, Teacher, NotImplementError, HalfPeroid
+from core.schemas import Course, LessonTimeChoice, BaseTeacher, NotImplementError, HalfPeroid
 from core.models.database import create_session, DB_URL
 from core.models.choices import user_choices 
 from core.schemas.iot import IOT, IOTTime
@@ -37,7 +37,7 @@ async def get_iot_time(year: int | None, half: Literal[1, 2] | None):
 async def set_iot_time(lesson_time: list[LessonTimeChoice] | IOTTime):
     raise NotImplementedException("Not Implement")
 
-@schedulerouter.get("/teachers", response_model=list[Teacher] | NotImplementError)
+@schedulerouter.get("/teachers", response_model=list[BaseTeacher] | NotImplementError)
 async def get_iot_teachers(descipline_id: int, year: int | None, half: Literal[1, 2] | None):
     if year and half:
         half_p = HalfPeroid(year=year, half=half)

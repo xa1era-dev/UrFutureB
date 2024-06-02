@@ -8,6 +8,6 @@ class WorkData(BaseModel):
 class Profession(BaseModel):
     id: int
     name: str
-    description: str
-    img_src: str
-    data: WorkData
+    description: str | None = None
+    img_src: str | None = None
+    data: WorkData | None = None

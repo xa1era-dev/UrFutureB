@@ -200,6 +200,7 @@ def insert_data(data: dict[str, list[str]], Model: Profession | Teacher | Compet
 
 def insert_disciplines_and_courses(discipline_courses_data: dict):
     with create_session(database.DB_URL) as sess:
+        # sess.insert(map(lambda n: Discipline(name=n), discipline_courses_data.keys()))
         try:
             for discipline_name, course_names in discipline_courses_data.items():
                 discipline = Discipline(name=discipline_name)
@@ -209,28 +210,28 @@ def insert_disciplines_and_courses(discipline_courses_data: dict):
                         discipline.courses.append(course)
                     else:
                         print(f"Course '{course_name}' not found")
-                sess.add(discipline)
+                sess.insert(discipline)
                 sess.commit()
                 print(f"Discipline '{discipline_name}' successfully added")
         except Exception as e:
             print(f"Error inserting discipline '{discipline_name}': {e}")
 
-
-
 def insert_courses_and_teachers(course_teachers_data: dict):
     with create_session(database.DB_URL) as sess:
+        # sess.insert(map(lambda n: Teacher(name=n), course_teachers_data.keys()))
         try:
             for teacher_name, course_names in course_teachers_data.items():
                 teacher = Teacher(name=teacher_name)
                 for course_name in course_names:
                     course = sess.query(Course).filter_by(name=course_name).first()
                     if course:
-                        teacher.courses.append(course)
+                        course.teachers.append(teacher)
                     else:
                         print(f"Course '{course_name}' not found")
                 sess.add(teacher)
                 sess.commit()
                 print(f"Teacher '{teacher_name}' successfully added")
+            sess.commit()
         except Exception as e:
             print(f"Error inserting teacher '{teacher_name}': {e}")
 

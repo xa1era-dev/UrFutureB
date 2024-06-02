@@ -4,7 +4,9 @@ from .base import Base
 from .tag import Tag
 from ..enums import Course_type
 from ..enums import Course_type
+from ..schemas import Course as CourseS
 from .teacher import Teacher
+from .lesson import Lesson
 from .secondaries import course_teachers
 
 
@@ -25,7 +27,7 @@ class Course(Base):
     year = Column(Integer)
     created_by = Column(String)
     tags: Mapped[list[Tag]] = relationship(secondary=course_tags)
-    lessons = relationship("Lesson", back_populates="course")
+    lessons: Mapped[list[Lesson]] = relationship("Lesson")
     teachers: Mapped[list[Teacher]] = relationship(secondary=course_teachers)
 
     def __repr__(self):
@@ -33,4 +35,10 @@ class Course(Base):
 
     def __str__(self):
         return f"Course: {self.name}"
+    
+    def __int__(self):
+        return self.id
+    
+    def to_model(self) -> CourseS:
+        return CourseS(**self.__dict__, teachers=list(map(lambda t: t.to_model(), self.teachers)), lessons=list(map(lambda l: l.to_model(), self.lessons)))
 

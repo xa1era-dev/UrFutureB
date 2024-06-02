@@ -1,6 +1,6 @@
 from core.models.database import DB_URL, create_session
 from .ApiRouterCusotm import ApiRouterCustom
-from core.schemas import Course, NotFoundApiError, NotImplementError, UnauthorizedApiError
+from core.schemas import Course, BaseTeacher, NotFoundApiError, NotImplementError, UnauthorizedApiError
 from core.models import Course as CourseM
 from ..responses import *
 
@@ -9,7 +9,9 @@ courserouter = ApiRouterCustom(prefix="/course")
 @courserouter.get("/all", response_model=list[Course])
 async def get_all_courses():
     with create_session(DB_URL) as sess:
-        return list(map(lambda c: Course(**c.__dict__), sess.query(CourseM).all()))
+        courses = sess.query(CourseM).all()
+        res = list(map(lambda c: c.to_model(), courses))
+        return res
 
 @courserouter.check_autorization()
 @courserouter.get("/me/all", response_model=list[Course] | UnauthorizedApiError | NotImplementError)
