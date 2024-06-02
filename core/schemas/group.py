@@ -1,7 +1,7 @@
 import uuid
 from pydantic import BaseModel, ConfigDict, EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
-from .teacher import BaseTeacher
+from .teacher import Teacher
 from .lesson import Lesson
 
 
@@ -11,5 +11,5 @@ class Group(BaseModel):
     uuid_: uuid.UUID = uuid.uuid4()
     type_: str = "Практика"
     name: str = "" #АТ-11
-    teachers: list[BaseTeacher] = []
+    teachers: list[Teacher] = []
     lessons: list[Lesson] = []
