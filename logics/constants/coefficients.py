@@ -1,4 +1,13 @@
+from typing import TypedDict
+
 from core import LessonRole, LessonChoiceState
+
+
+class ComponentsCoefficients(TypedDict):
+    course_coefficient: float
+    time_coefficient: float
+    teacher_coefficient: float
+
 
 MIN_COEFFICIENT = 0.25
 
@@ -16,3 +25,5 @@ time_state_to_coefficient = {
     LessonChoiceState.NOT_ACCEPT: 0.5,
     LessonChoiceState.IGNORE: MIN_COEFFICIENT
 }
+
+default_components_coeffs = ComponentsCoefficients(course_coefficient=1, time_coefficient=1, teacher_coefficient=1)

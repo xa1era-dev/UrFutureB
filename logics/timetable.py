@@ -1,71 +1,41 @@
-from typing import List, Dict, Tuple
+from collections import defaultdict
 
 # TODO: Перейти на использование моделей, вместо схем.
 from schemas.group import Group
 from schemas.discipline import Discipline
 
-from core import Competence, LessonTimeChoice, TeacherChoice, Course
+from core.models import Competence, LessonTimeChoice, TeacherChoice, Course
 
-from logics.timetable_builder import Timetable
-from sorting import get_courses_sorted_by_relevance
+from logics.weighters.course_weighter import CourseWeighter
+from logics.timetable_builder import TimetableBuilder
 from logics.constants import *
 
 
 def build_timetable(
-        compteneces: List[Competence],
-        disciplines: List[Discipline],
-        preferred_times: List[LessonTimeChoice],
-        preferred_teachers: Dict[int, List[TeacherChoice]],
-        preferred_courses: Dict[int, List[Course]]) -> Dict[int, Tuple[Course, Group]]:
-    # Сортируем курсы каждой дисциплины, чтобы наиболее подходящие для выбранной профессии были в начале списка.
-    # (профессия представлена в виде набора связанных с ней компетенций).
-    # Удаляем курсы, которые абсолютно не подходят для выбранной профессии.
-    for discipline in disciplines:
-        discipline.courses = get_courses_sorted_by_relevance(discipline.courses, compteneces, remove_zeros=True)
-
-    # Группируем интервалы по дням для ускорения поиска временных интервалов.
-    grouped_times = get_times_grouped_by_day(preferred_times)
-
-    for discipline in disciplines:
-        # Формируем коэффициенты для избранных преподавателей.
-        preferred_teachers_coeffs = get_preffered_teachers_coefficients(preferred_teachers.get(discipline.id, []))
-
-        # Сортируем группы каждого курса, включая приоритетные (курсы) для пользователя.
-        sort_courses_groups(discipline.courses, grouped_times, preferred_teachers_coeffs)
-        sort_courses_groups(preferred_courses.get(discipline.id, []), grouped_times, preferred_teachers_coeffs)
-
-    timetable = Timetable(week_length=7, classes_at_day=10)
-    final_selection = dict()
-
-    for discipline in disciplines:
-        preferred = preferred_courses.get(discipline.id, None)
-        course_with_group = None
-
-        if preferred is not None:
-            course_with_group = try_choose_group(preferred, timetable)
-
-        if course_with_group is None:
-            course_with_group = try_choose_group(discipline.courses, timetable)
-
-        if course_with_group is None:
-            raise Exception("Something went wrong: must be at least 1 (course, group) pair.")
-
-        final_selection[discipline.id] = (course_with_group[0], course_with_group[1])
-
-    return final_selection
+        compteneces: list[Competence],
+        disciplines: list[Discipline],
+        preferred_times: list[LessonTimeChoice],
+        preferred_teachers: dict[int, list[TeacherChoice]],
+        preferred_courses: dict[int, list[Course]],
+        course_weighter: CourseWeighter,
+        components_coeffs: ComponentsCoefficients) -> list[Group]:
+    """
+    Полное описание работы алгоритма.
+    """
+    pass
 
 
-def try_choose_group(courses: List[Course], timetable: Timetable) -> tuple[Course, Group] | None:
+def try_choose_group(courses: list[Course], timetable_builder: TimetableBuilder) -> tuple[Course, Group] | None:
     for course in courses:
         for group in course.groups:
             time_fit = True
 
             for lesson in group.lessons:
-                time_fit &= timetable.can_add(lesson.day, lesson.start, lesson.end)
+                time_fit &= timetable_builder.can_add_lesson(lesson.day, lesson.start, lesson.end)
 
             if time_fit:
                 for lesson in group.lessons:
-                    timetable.add_without_validation(lesson.day, lesson.start, lesson.end)
+                    timetable_builder.add_lesson(lesson.day, lesson.start, lesson.end)
 
                 return course, group
 
@@ -73,9 +43,9 @@ def try_choose_group(courses: List[Course], timetable: Timetable) -> tuple[Cours
 
 
 def sort_courses_groups(
-        courses: List[Course],
-        grouped_times: Dict[int, List[LessonTimeChoice]],
-        teachers_coeffs: Dict[int, float]) -> None:
+        courses: list[Course],
+        grouped_times: dict[int, list[LessonTimeChoice]],
+        teachers_coeffs: dict[int, float]) -> None:
     for course in courses:
         groups_weights = dict()
 
@@ -83,11 +53,10 @@ def sort_courses_groups(
             groups_weights[group.uuid_] = \
                 (get_time_coefficient(group, grouped_times) * get_teachers_coefficient(group, teachers_coeffs))
 
-        # После выставления весов всем группам, ставим "наиболее ценные" в начало списка.
         course.groups.sort(key=lambda g: groups_weights[g.uuid_], reverse=True)
 
 
-def get_time_coefficient(group: Group, grouped_times: Dict[int, List[LessonTimeChoice]]) -> float:
+def get_time_coefficient(group: Group, grouped_times: dict[int, list[LessonTimeChoice]]) -> float:
     res_coeff = 0
 
     for lesson in group.lessons:
@@ -109,7 +78,7 @@ def get_time_coefficient(group: Group, grouped_times: Dict[int, List[LessonTimeC
     return res_coeff / len(group.lessons)
 
 
-def get_teachers_coefficient(group: Group, preferred_coeffs: Dict[int, float]) -> float:
+def get_teachers_coefficient(group: Group, preferred_coeffs: dict[int, float]) -> float:
     res_coeff = 0
 
     for teacher in group.teachers:
@@ -121,7 +90,7 @@ def get_teachers_coefficient(group: Group, preferred_coeffs: Dict[int, float]) -
     return res_coeff / len(group.teachers)
 
 
-def get_preffered_teachers_coefficients(teachers: List[TeacherChoice]) -> Dict[int, float]:
+def get_preffered_teachers_coefficients(teachers: list[TeacherChoice]) -> dict[int, float]:
     teacher_to_coeff = dict()
     step = (1 - 0.25) / (len(teachers) - 1)
 
@@ -131,14 +100,10 @@ def get_preffered_teachers_coefficients(teachers: List[TeacherChoice]) -> Dict[i
     return teacher_to_coeff
 
 
-def get_times_grouped_by_day(selected_times: List[LessonTimeChoice]) -> Dict[int, List[LessonTimeChoice]]:
-    all_times = dict()
+def get_times_grouped_by_day(times: list[LessonTimeChoice]) -> dict[int, list[LessonTimeChoice]]:
+    all_times = defaultdict(list)
 
-    for time in selected_times:
-        day = int(time.day)
-        if day in all_times:
-            all_times[day].append(time)
-        else:
-            all_times[day] = [time]
+    for time in times:
+        all_times[time.day].append(time)
 
     return all_times

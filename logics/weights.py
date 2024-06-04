@@ -1,8 +1,7 @@
-from typing import List
-from core import Course, Tag
+from core.models import Course, Tag
 
 
-def get_course_weight(course: Course, tags: List[Tag], order_matters: bool = False) -> float:
+def get_course_weight(course: Course, tags: list[Tag], order_matters: bool = False) -> float:
     """
     Вычисляет вес курса, как процент покрытия указанных тегов его тегами.
 
@@ -19,7 +18,7 @@ def get_course_weight(course: Course, tags: List[Tag], order_matters: bool = Fal
     return get_overlapping_percentage(course.tags, tags) / 100
 
 
-def get_overlapping_percentage(collection1: List, collection2: List) -> float:
+def get_overlapping_percentage(collection1: list, collection2: list) -> float:
     """
     Вычисляет процент покрытия второй коллекции первой.
 

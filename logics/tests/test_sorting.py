@@ -1,8 +1,7 @@
 import unittest
 
-from core import Competence, Tag, Profession, Course
-from logics import sort_competences_by_intersection_with_profession_tags, get_courses_sorted_by_relevance
-from logics.sorting import get_all_tags
+from core.models import Competence, Tag, Profession, Course
+from logics import sort_competences_by_intersection_with_profession_tags, get_all_tags, get_courses_sorted_by_relevance
 
 
 class TestSorting(unittest.TestCase):

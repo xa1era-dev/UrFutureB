@@ -1,5 +1,6 @@
 from itertools import chain
 from typing import List, Set
+
 from core.models import Course, Tag, Profession, Competence
 from .weights import get_course_weight, get_overlapping_percentage
 
@@ -42,20 +43,11 @@ def get_courses_sorted_by_relevance(
         Упорядоченный список объектов Course.
     """
     comp_tags = [comp.tags for comp in competences]
+    relevants = {crs.id: get_course_average_relevance(crs, comp_tags) for crs in courses}
 
-    result_courses = list()
-    relevants = dict()
+    result_courses = list(filter(lambda crs: relevants[crs.id] != 0 or not remove_zeros, courses))
+    result_courses.sort(key=lambda crs: relevants[crs.id], reverse=descending)
 
-    for crs in courses:
-        relevants[crs.id] = get_course_average_relevance(crs, comp_tags)
-
-    for crs in courses:
-        if relevants[crs.id] == 0 and remove_zeros:
-            continue
-
-        result_courses.append(crs)
-
-    result_courses.sort(key=lambda c: relevants[c.id], reverse=descending)
     return result_courses
 
 
