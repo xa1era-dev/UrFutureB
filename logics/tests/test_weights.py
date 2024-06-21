@@ -1,7 +1,7 @@
 import unittest
 
-from core import Course, Tag
-from logics.weights import get_course_weight
+from core.models import Tag, Course
+from logics import get_course_weight
 
 
 class TestWeights(unittest.TestCase):
