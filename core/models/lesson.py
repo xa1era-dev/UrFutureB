@@ -9,14 +9,16 @@ class Lesson(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)
-    course_id = Column(Integer, ForeignKey('course.id'))
-    # course = relationship("Course", back_populates="lessons")
+    group_id = Column(Integer, ForeignKey('group.id'))  # Внешний ключ для связи с группой
+    group = relationship("Group", back_populates="lessons")  # Связь с группой
 
     def __repr__(self):
-        return f"<Lesson(id={self.id}, title='{self.title}', course_id={self.course_id})>"
+        return f"<Lesson(id={self.id}, title='{self.title}', group_id={self.group_id})>"
 
     def __str__(self):
         return f"Lesson: {self.title}"
 
     def to_model(self) -> LessonS:
         return LessonS(**self.__dict__)
+
+
