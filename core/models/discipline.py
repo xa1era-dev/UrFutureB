@@ -16,7 +16,7 @@ class Discipline(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     description = Column(String)
-    courses: Mapped[list["Course"]] = relationship(secondary=discipline_courses)
+    courses: Mapped[list["Course"]] = relationship("Course", secondary=discipline_courses, back_populates="disciplines")
 
     def __repr__(self):
         return f"<Discipline(id={self.id}, name='{self.name}', description='{self.description}')>"
@@ -26,3 +26,4 @@ class Discipline(Base):
     
     def to_schema(self) -> DisciplineS:
         return DisciplineS(**self.__dict__, courses=list(map(lambda c: CourseS(**c.__dict__), self.courses)))
+
