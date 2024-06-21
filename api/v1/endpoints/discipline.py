@@ -10,7 +10,7 @@ disciplinerouter = ApiRouterCustom(prefix="/discipline")
 async def get_all_dicsiplines():
     with create_session(DB_URL) as sess:
         disciplines = sess.query(DisciplineM).all()
-        res = list(map(lambda d: d.to_model(), disciplines))
+        res = list(map(lambda d: d.to_schema(), disciplines))
         return res
 
 @disciplinerouter.check_autorization()

@@ -16,7 +16,7 @@ class Course(BaseModel, extra="ignore"):
     name: str
     half: HalfPeroid = HalfPeroid(year=2024, half=1) 
     img_src: HttpUrl | None = None
-    description: str = ""
+    description: str | None = ""
     groups: list[Group] = []
     teachers: list[BaseTeacher] = []
     lessons: list[Lesson] = []

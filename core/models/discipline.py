@@ -24,5 +24,5 @@ class Discipline(Base):
     def __str__(self):
         return f"Discipline: {self.name}"
     
-    def to_model(self) -> DisciplineS:
+    def to_schema(self) -> DisciplineS:
         return DisciplineS(**self.__dict__, courses=list(map(lambda c: CourseS(**c.__dict__), self.courses)))
