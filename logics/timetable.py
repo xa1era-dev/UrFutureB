@@ -1,12 +1,11 @@
 from collections import defaultdict
 
-# TODO: Перейти на использование моделей, вместо схем.
-from schemas.group import Group
-from schemas.discipline import Discipline
+from logics import RelevanceCourseWeighter
+from models.group import Group
+from models.discipline import Discipline
 
 from core.models import Competence, LessonTimeChoice, TeacherChoice, Course
 
-from logics.weighters.course_weighter import CourseWeighter
 from logics.timetable_builder import TimetableBuilder
 from logics.constants import *
 
@@ -17,43 +16,63 @@ def build_timetable(
         preferred_times: list[LessonTimeChoice],
         preferred_teachers: dict[int, list[TeacherChoice]],
         preferred_courses: dict[int, list[Course]],
-        course_weighter: CourseWeighter,
         components_coeffs: ComponentsCoefficients) -> list[Group]:
-    """
-    Полное описание работы алгоритма.
-    """
-    pass
+    all_groups, group_coeffs = [], {}
 
+    grouped_times = get_times_grouped_by_day(preferred_times)
+    weighter = RelevanceCourseWeighter(compteneces)
 
-def try_choose_group(courses: list[Course], timetable_builder: TimetableBuilder) -> tuple[Course, Group] | None:
-    for course in courses:
-        for group in course.groups:
-            time_fit = True
+    for discipline in disciplines:
+        course_weights = weighter.get_courses_weights(discipline.courses)
+        teachers = get_preffered_teachers_coefficients(preferred_teachers.get(discipline.id, []))
 
+        for course in discipline.courses:
+            for group in course.groups:
+                time_mult = components_coeffs["time_coefficient"] * get_time_coefficient(group, grouped_times)
+                teacher_mult = components_coeffs["teacher_coefficient"] * get_teachers_coefficient(group, teachers)
+
+                course_mult = 1
+                if not any(crs.id == course.id for crs in preferred_courses.get(discipline.id, [])):
+                    course_mult = components_coeffs["course_coefficient"] * course_weights[course.id]
+
+                group_coeffs[group.id] = time_mult * teacher_mult * course_mult
+                all_groups.append(group)
+
+    all_groups.sort(key=lambda grp: group_coeffs[grp.id], reverse=True)
+
+    counter, max_counter, marked_courses = 0, len(disciplines), {}
+    timetable_builder = TimetableBuilder(week_length=7, lessons_at_day=10)
+
+    final_groups = []
+
+    for group in all_groups:
+        if counter == max_counter:
+            break
+
+        if marked_courses[group.course.id]:
+            continue
+
+        time_fit = True
+
+        for lesson in group.lessons:
+            time_fit &= timetable_builder.can_add_lesson(lesson.day, lesson.start, lesson.end)
+
+            if time_fit is False:
+                break
+
+        if time_fit:
             for lesson in group.lessons:
-                time_fit &= timetable_builder.can_add_lesson(lesson.day, lesson.start, lesson.end)
+                timetable_builder.add_lesson(lesson.day, lesson.start, lesson.end)
 
-            if time_fit:
-                for lesson in group.lessons:
-                    timetable_builder.add_lesson(lesson.day, lesson.start, lesson.end)
+            marked_courses[group.course.id] = True
+            final_groups.append(group)
 
-                return course, group
+            counter += 1
 
-    return None
+    if counter != max_counter:
+        raise Exception("Something went wrong during timetable creation.")
 
-
-def sort_courses_groups(
-        courses: list[Course],
-        grouped_times: dict[int, list[LessonTimeChoice]],
-        teachers_coeffs: dict[int, float]) -> None:
-    for course in courses:
-        groups_weights = dict()
-
-        for group in course.groups:
-            groups_weights[group.uuid_] = \
-                (get_time_coefficient(group, grouped_times) * get_teachers_coefficient(group, teachers_coeffs))
-
-        course.groups.sort(key=lambda g: groups_weights[g.uuid_], reverse=True)
+    return final_groups
 
 
 def get_time_coefficient(group: Group, grouped_times: dict[int, list[LessonTimeChoice]]) -> float:
