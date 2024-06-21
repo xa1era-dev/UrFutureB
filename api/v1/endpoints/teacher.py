@@ -11,7 +11,6 @@ async def get_all_teachers():
     with create_session(DB_URL) as sess:
         return list(map(lambda c: BaseTeacher(**c.__dict__), sess.query(TeacherM).all()))
 
-@teacherrouter.check_autorization()
 @teacherrouter.get("/me/all", response_model=list[BaseTeacher] | UnauthorizedApiError | NotImplementError)
 async def get_my_all_teachers():
     raise NotImplementedException("get_my_all_courses")

@@ -7,6 +7,7 @@ from ..schemas import Course as CourseS
 from .teacher import Teacher
 from .lesson import Lesson
 from .secondaries import course_teachers
+# from .discipline import discipline_courses
 
 course_tags = Table('course_tags', Base.metadata,
     Column('course_id', Integer, ForeignKey('course.id')),
@@ -24,10 +25,10 @@ class Course(Base):
     course_type = Column(Enum(Course_type), server_default=Course_type.traditional.value)
     year = Column(Integer)
     created_by = Column(String)
-    tags: Mapped[list[Tag]] = relationship("Tag", secondary=course_tags, back_populates="courses")
+    tags: Mapped[list[Tag]] = relationship("Tag", secondary=course_tags)
     lessons: Mapped[list[Lesson]] = relationship("Lesson")
     teachers: Mapped[list[Teacher]] = relationship(secondary=course_teachers)
-    disciplines: Mapped[list["Discipline"]] = relationship("Discipline", secondary=discipline_courses, back_populates="courses")
+    disciplines: Mapped[list["Discipline"]] = relationship("Discipline", secondary="discipline_courses", back_populates="courses")
 
     def __repr__(self):
         return f"<Course(id={self.id}, name='{self.name}', description='{self.description}')>"

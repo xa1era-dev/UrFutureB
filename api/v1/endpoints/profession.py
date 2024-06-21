@@ -13,7 +13,6 @@ async def get_all_professions():
     with create_session(DB_URL) as sess:
         return list(map(lambda c: Profession(**c.__dict__), sess.query(ProfessionM).all()))
 
-@professionrouter.check_autorization()
 @professionrouter.get("/me/all", response_model=list[Profession] | NotFoundApiError | NotImplementError)
 async def get_courses_by_profprofession(pr_id: int):
     raise NotImplementedException("Not Implement")

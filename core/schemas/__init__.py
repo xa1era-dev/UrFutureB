@@ -13,6 +13,7 @@ from .iot import IOT, IOTTime
 from .discipline import Discipline
 from .half_period import HalfPeroid
 from .teacher import BaseTeacher, Teacher
+from .choicess import *
 
 def filter_schema_classes(obj):
     return inspect.isclass(obj) and issubclass(obj, BaseModel) and __name__ in obj.__module__

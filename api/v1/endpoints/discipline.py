@@ -13,7 +13,6 @@ async def get_all_dicsiplines():
         res = list(map(lambda d: d.to_schema(), disciplines))
         return res
 
-@disciplinerouter.check_autorization()
 @disciplinerouter.get("/me/all", response_model=list[Discipline] | UnauthorizedApiError | NotImplementError)
 async def get_my_all_dicsiplines():
     raise NotImplementedException("get_my_all_dicsipline")

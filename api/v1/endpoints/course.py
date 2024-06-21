@@ -13,7 +13,6 @@ async def get_all_courses():
         res = list(map(lambda c: c.to_model(), courses))
         return res
 
-@courserouter.check_autorization()
 @courserouter.get("/me/all", response_model=list[Course] | UnauthorizedApiError | NotImplementError)
 async def get_my_all_courses():
     raise NotImplementedException("get_my_all_courses")
